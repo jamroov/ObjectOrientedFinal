@@ -20,14 +20,14 @@ public class GameBoard {
     public int numPlayers = 1;
     public ArrayList<Player> players = new ArrayList<>();
     public static Double startingMoney = 150000.00;
-    public int numStarterCars = 12;
-    public int numStarterClients = 8;
+    public int numStarterCars = 6;
+    public int numStarterClients = 6;
     public Boolean showStartScreen = true;
     public static Boolean gameEnded = false;
     public ArrayList<Vehicle> availableVehicles = new ArrayList<>();
     public ArrayList<Customer> availableCustomers = new ArrayList<>();
     public Set<Garage> availableGarages = new HashSet<>();
-    private int currentPlayerId;
+    private int currentPlayerId = 0;
 
     public int getCurrentPlayerId() {
         return currentPlayerId;
@@ -39,15 +39,35 @@ public class GameBoard {
 
     public GameBoard() {
     }
-    public void Play(Menu menu, Integer playerId) throws IOException {
+    public Boolean Play(Menu menu, Integer playerId) throws IOException {
         this.currentPlayerId = playerId;
+        System.out.println(this.getCurrentPlayer().toString());
+        Boolean endGame = false;
         menu.PrintMenu();
         Integer choice = menu.getChoice();
-        menu.selectAction(choice);
+        Boolean finishTurn = menu.selectAction(choice);
+        if (finishTurn) {
+            if (this.checkIfWon()) {
+                endGame = true;
+                System.out.println("Congratulations");
+                System.out.println(this.getCurrentPlayer().toString());
+                System.out.println("You WON!!!");
+                return endGame;
+            }
+            this.players.get(this.currentPlayerId).moveNumber++;
+            if (this.currentPlayerId + 1 < this.numPlayers) {
+                this.currentPlayerId++;
+            }
+            else { //back to first player
+                this.currentPlayerId = 0;
+            }
+            return endGame;
+        }
         //printMenu()
         //waitForMove()
         //Check for winning conditions
         //Continue()
+        return endGame;
     }
 
     public void newGame() throws SQLException, IOException {
@@ -59,9 +79,8 @@ public class GameBoard {
         this.availableGarages.add(new MediumMarianCars("Medium", 10));
         this.availableGarages.add(new LuxJanuszAuto("Expensive", 0));
         Menu mainMenu = new Menu(this);
-        Integer index = 0;
         while (!gameEnded) {
-            Play(mainMenu, this.players.get(index).id);
+            gameEnded = Play(mainMenu, this.currentPlayerId);
         }
         //finishGame();
     }
@@ -80,5 +99,17 @@ public class GameBoard {
         for (Vehicle vehicle : this.availableVehicles) {
             System.out.println(vehicle.toString());
         }
+    }
+
+    public String listCustomers() {
+        StringBuilder data = new StringBuilder();
+        for (Customer cust : this.availableCustomers) {
+            data.append(cust.toString()).append("\n");
+        }
+        return data.toString();
+    }
+
+    public Boolean checkIfWon() {
+        return this.getCurrentPlayer().getMoney() >= startingMoney;
     }
 }

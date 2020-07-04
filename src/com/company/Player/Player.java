@@ -59,14 +59,16 @@ public class Player {
             name = scanner.next();
             Player player = new Player(name, GameBoard.startingMoney, i);
             thisGame.players.add(player);
-            System.out.println(thisGame.players.get(i).toString());
         }
     }
 
     public Boolean buyVehicle(Vehicle vehicle) {
-        if (vehicle.value <= this.Money) {
+        Double totalPrice = vehicle.value + (vehicle.value * 0.02);
+        System.out.println(String.format("Vehicle price is: %.2f, you will also pay tax: %.2f", vehicle.value, vehicle.value * 0.02));
+        System.out.println(String.format("For a total price of: %.2f", totalPrice));
+        if (totalPrice <= this.Money) {
             this.addVehicle(vehicle);
-            this.subtractMoney(vehicle.value);
+            this.subtractMoney(totalPrice);
             return true;
         }
         else {
@@ -93,5 +95,15 @@ public class Player {
 
     public String toString() {
         return String.format("Player number: %d. Name: %s. Account balance: %.2f. Move count: %d", this.id, this.name, this.Money, this.moveNumber);
+    }
+
+    public Vehicle getVehicleById(Integer id) {
+        for (Vehicle veh : this.Vehicles) {
+            if (veh.id.equals(id)) {
+                return veh;
+            }
+        }
+        System.out.println("You don't won a vehicle with ID: " + id);
+        return null;
     }
 }

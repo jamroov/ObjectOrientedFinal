@@ -69,15 +69,17 @@ public class Menu {
         }
     }
 
-    public void selectAction(Integer choice) throws IOException {
+    public Boolean selectAction(Integer choice) throws IOException {
         Scanner scanner = new Scanner(System.in);
         Player currentPlayer = game.getCurrentPlayer();
+        Boolean finishTurn = false;
         switch (choice) {
             case 1:
                 System.out.println("All available vehicles: \n");
                 game.listAllVehicles();
                 System.out.println("Press enter to continue.");
                 this.getEnterKey();
+                finishTurn = false;
                 break;
             case 2:
                 System.out.println("ID of a vehicle to buy:");
@@ -86,6 +88,7 @@ public class Menu {
                 if (vehToBuy == null) {
                     System.out.println("Press enter to continue.");
                     this.getEnterKey();
+                    finishTurn = false;
                     break;
                 }
                 if (currentPlayer.buyVehicle(vehToBuy)) {
@@ -93,40 +96,54 @@ public class Menu {
                 }
                 System.out.println("Press enter to continue.");
                 this.getEnterKey();
+                finishTurn = true;
                 break;
             case 3:
                 System.out.println("These are all your cars:");
                 System.out.println(currentPlayer.listOwnedCars());
                 System.out.println("Press enter to continue.");
                 this.getEnterKey();
+                finishTurn = false;
                 break;
             case 4:
                 //carRepair
+                finishTurn = true;
                 break;
             case 5:
-                //viewClientelle
+                System.out.println("These are potential buyers:");
+                System.out.println(game.listCustomers());
+                System.out.println("Press enter to continue.");
+                this.getEnterKey();
+                finishTurn = false;
                 break;
             case 6:
                 //sellCar2Client
+                finishTurn = true;
                 break;
             case 7:
                 //buyAdvert
+                finishTurn = true;
                 break;
             case 8:
                 System.out.println("Your account balance.");
                 System.out.println(game.players.get(game.getCurrentPlayerId()).getMoney());
                 System.out.println("Press enter to continue.");
                 this.getEnterKey();
+                finishTurn = false;
                 break;
             case 9:
                 //CheckTransHist
+                finishTurn = false;
                 break;
             case 10:
                 //CheckRepairHist
+                finishTurn = false;
                 break;
             case 11:
                 //calculateRepairCleanCost
+                finishTurn = false;
                 break;
         }
+        return finishTurn;
     }
 }

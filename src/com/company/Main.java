@@ -6,10 +6,7 @@ import com.company.Menu.Menu;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 
@@ -21,5 +18,6 @@ public class Main {
 
         GameBoard thisGame = new GameBoard();
         thisGame.newGame();
+
     }
 }

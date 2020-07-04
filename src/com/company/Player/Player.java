@@ -1,9 +1,10 @@
 package com.company.Player;
 
-import com.company.Cars.Car;
-import com.company.Cars.Vehicle;
+import com.company.Game.GameBoard;
+import com.company.Vehicles.Vehicle;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Player {
     public int id;
@@ -44,6 +45,18 @@ public class Player {
 
     public Double getMoney() {
         return Money;
+    }
+
+    public static void setupPlayers(GameBoard thisGame, Integer howMany) {
+        Scanner scanner = new Scanner(System.in);
+        String name;
+        for (int i = 0; i < howMany; i++) {
+            System.out.println("Your name please:");
+            name = scanner.next();
+            Player player = new Player(name, GameBoard.startingMoney, i+1);
+            thisGame.players.add(player);
+            System.out.println(thisGame.players.get(i).toString());
+        }
     }
 
     public void increaseMoveCount() {

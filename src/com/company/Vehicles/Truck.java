@@ -3,7 +3,8 @@ package com.company.Vehicles;
 public class Truck extends Vehicle {
     public Double load_capacity;
 
-    public Truck(Double value, String make, Integer mileage, String colour, String segment, Double load_capacity) {
+    public Truck(Integer id, Double value, String make, Integer mileage, String colour, String segment, Double load_capacity) {
+        this.id = id;
         this.value = value;
         this.make = make;
         this.mileage = mileage;
@@ -14,6 +15,6 @@ public class Truck extends Vehicle {
     }
 
     public String toString() {
-        return "Truck, " + super.toString() + String.format(", load capacity: %.2f", this.load_capacity);
+        return "Truck," + String.format(" load capacity: %.2f ", this.load_capacity) + super.toString();
     }
 }

@@ -39,7 +39,6 @@ public class Customer {
 
             Customer thisCustomer = new Customer(name, cash, wantedType, buyDamaged);
             thisGame.availableCustomers.add(thisCustomer);
-            System.out.println(thisCustomer.toString());
         }
     }
 

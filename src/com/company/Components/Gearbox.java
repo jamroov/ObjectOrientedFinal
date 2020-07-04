@@ -1,8 +1,11 @@
 package com.company.Components;
 
 public class Gearbox extends Component {
-    public Gearbox() {
+
+    public Gearbox(Double health) {
         this.priceIncrease = 0.50;
-        this.health = 100.00;
+        this.health = health;
+        this.damaged = health < 60.00;
+        this.type = "Gearbox";
     }
 }

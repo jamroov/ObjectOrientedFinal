@@ -1,15 +1,22 @@
 package com.company.Menu;
 
+import com.company.Game.GameBoard;
+import com.company.Player.Player;
+import com.company.Vehicles.Vehicle;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
 public class Menu {
+    private GameBoard game;
     public Map<Integer, String> optionsDict = new HashMap<Integer, String>();
     ArrayList<String> options = new ArrayList<>();
 
-    public Menu() {
+    public Menu(GameBoard game) {
+        this.game = game;
         this.BuildMenuOptions();
     }
 
@@ -36,6 +43,10 @@ public class Menu {
         }
     }
 
+    public void getEnterKey() throws IOException {
+        System.in.read();
+    }
+
     public Integer getChoice() {
         Integer choice = 0;
         Scanner scanner = new Scanner(System.in);
@@ -58,16 +69,36 @@ public class Menu {
         }
     }
 
-    public void selectAction(Integer choice) {
+    public void selectAction(Integer choice) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        Player currentPlayer = game.getCurrentPlayer();
         switch (choice) {
             case 1:
-                //listCars2buy
+                System.out.println("All available vehicles: \n");
+                game.listAllVehicles();
+                System.out.println("Press enter to continue.");
+                this.getEnterKey();
                 break;
             case 2:
-                //buyCar
+                System.out.println("ID of a vehicle to buy:");
+                Integer ID = scanner.nextInt();
+                Vehicle vehToBuy = game.getVehicleById(ID);
+                if (vehToBuy == null) {
+                    System.out.println("Press enter to continue.");
+                    this.getEnterKey();
+                    break;
+                }
+                if (currentPlayer.buyVehicle(vehToBuy)) {
+                    game.availableVehicles.remove(vehToBuy);
+                }
+                System.out.println("Press enter to continue.");
+                this.getEnterKey();
                 break;
             case 3:
-                //listOwnedCars
+                System.out.println("These are all your cars:");
+                System.out.println(currentPlayer.listOwnedCars());
+                System.out.println("Press enter to continue.");
+                this.getEnterKey();
                 break;
             case 4:
                 //carRepair
@@ -82,7 +113,10 @@ public class Menu {
                 //buyAdvert
                 break;
             case 8:
-                //CheckAccBalance
+                System.out.println("Your account balance.");
+                System.out.println(game.players.get(game.getCurrentPlayerId()).getMoney());
+                System.out.println("Press enter to continue.");
+                this.getEnterKey();
                 break;
             case 9:
                 //CheckTransHist

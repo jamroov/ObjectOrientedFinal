@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Vehicle {
+    public String type; //Car, Truck, Motorcycle
     public Integer id;
     public Double value;
     public String make;
@@ -64,11 +65,24 @@ public abstract class Vehicle {
         }
     }
 
+    public Component getComponentByName(String name) {
+        for (Component com : this.components) {
+            if (com.type.equals(name)) {
+                return com;
+            }
+        }
+        return null;
+    }
+
     public static void totalThisVehicle(Vehicle veh) {
         for (Component comp : veh.components) {
             comp.health = 0.50;
             comp.damaged = true;
         }
         veh.value = 0.0;
+    }
+
+    public String toStringShort() {
+        return String.format("%s. ID: %d. Make: %s. Value: %.2f", this.type, this.id, this.make, this.value);
     }
 }

@@ -1,13 +1,22 @@
 package com.company.Garages;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MediumMarianCars extends Garage {
+    public Map<String, Double> prices = new HashMap<String, Double>(Garage.priceMap);
+
     public MediumMarianCars(String typeOfGarage, Integer riskOfFailure) {
         this.typeOfGarage = typeOfGarage;
         this.riskOfFailure = riskOfFailure;
-        this.priceMap.put("Body", 10000.00);
-        this.priceMap.put("Brakes", 2000.00);
-        this.priceMap.put("Dampers", 3000.00);
-        this.priceMap.put("Engine", 10000.00);
-        this.priceMap.put("Gearbox", 6000.00);
+        updatePriceMap();
+    }
+
+    public void updatePriceMap() {
+        for (Map.Entry<String, Double> entry : this.prices.entrySet()) {
+            String key = entry.getKey();
+            double defaultPriceModifier = 1.5;
+            entry.setValue(entry.getValue() * defaultPriceModifier);
+        }
     }
 }

@@ -8,9 +8,10 @@ public class Car extends Vehicle {
         this.mileage = mileage;
         this.colour = colour;
         this.segment = segment;
+        this.type = "Car";
     }
 
     public String toString() {
-        return "Car, " + super.toString();
+        return super.toString();
     }
 }

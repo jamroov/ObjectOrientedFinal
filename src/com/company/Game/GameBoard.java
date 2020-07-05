@@ -26,7 +26,7 @@ public class GameBoard {
     public static Boolean gameEnded = false;
     public ArrayList<Vehicle> availableVehicles = new ArrayList<>();
     public ArrayList<Customer> availableCustomers = new ArrayList<>();
-    public Set<Garage> availableGarages = new HashSet<>();
+    public ArrayList<Garage> availableGarages = new ArrayList<>();
     private int currentPlayerId = 0;
 
     public int getCurrentPlayerId() {
@@ -75,6 +75,7 @@ public class GameBoard {
         Player.setupPlayers(this, this.numPlayers);
         Vehicle.setupVehicles(this, this.numStarterCars);
         Customer.setupCustomers(this, this.numStarterClients);
+        Garage.setDefaultPrices(10000.00, 6000.00, 4500.00, 12500.00, 10250.00);
         this.availableGarages.add(new CheapJanuszPol("Cheap", 5));
         this.availableGarages.add(new MediumMarianCars("Medium", 10));
         this.availableGarages.add(new LuxJanuszAuto("Expensive", 0));
@@ -107,6 +108,24 @@ public class GameBoard {
             data.append(cust.toString()).append("\n");
         }
         return data.toString();
+    }
+
+    public String listWorkshops() {
+        StringBuilder data = new StringBuilder();
+        for (Garage gar : this.availableGarages) {
+            data.append(gar.toString()).append("\n");
+        }
+        return data.toString();
+    }
+
+    public Garage getGarageByType(String type) {
+        for (Garage gar : this.availableGarages) {
+            if (gar.typeOfGarage.equals(type)) {
+                return gar;
+            }
+        }
+        System.out.println(String.format("No garage with id: %s", type));
+        return null;
     }
 
     public Boolean checkIfWon() {

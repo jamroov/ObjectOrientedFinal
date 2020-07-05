@@ -4,6 +4,7 @@ public class Truck extends Vehicle {
     public Double load_capacity;
 
     public Truck(Integer id, Double value, String make, Integer mileage, String colour, String segment, Double load_capacity) {
+        this.type = "Truck";
         this.id = id;
         this.value = value;
         this.make = make;
@@ -15,6 +16,6 @@ public class Truck extends Vehicle {
     }
 
     public String toString() {
-        return "Truck," + String.format(" load capacity: %.2f ", this.load_capacity) + super.toString();
+        return super.toString() + String.format(" load capacity: %.2f ", this.load_capacity);
     }
 }

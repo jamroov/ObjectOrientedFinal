@@ -1,8 +1,13 @@
 package com.company.Menu;
 
+import com.company.Components.Component;
 import com.company.Game.GameBoard;
+import com.company.Garages.Garage;
 import com.company.Player.Player;
+import com.company.Transactions.Pay;
+import com.company.Transactions.Transaction;
 import com.company.Vehicles.Vehicle;
+import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,8 +88,7 @@ public class Menu {
                 break;
             case 2:
                 System.out.println("ID of a vehicle to buy:");
-                Integer ID = scanner.nextInt();
-                Vehicle vehToBuy = game.getVehicleById(ID);
+                Vehicle vehToBuy = this.userInputGetFromAllVeh();
                 if (vehToBuy == null) {
                     System.out.println("Press enter to continue.");
                     this.getEnterKey();
@@ -106,7 +110,30 @@ public class Menu {
                 finishTurn = false;
                 break;
             case 4:
-                //carRepair
+                System.out.println(game.listWorkshops());
+                Vehicle thisVeh = this.userInputGetPlayersVeh(currentPlayer);
+                if (thisVeh == null) {
+                    System.out.println("Failed to get vehicle");
+                    finishTurn = false;
+                    break;
+                }
+                Component thisComp = this.userInputGetVehComponent(thisVeh);
+                if (thisComp == null) {
+                    System.out.println("Failed to get component");
+                    finishTurn = false;
+                    break;
+                }
+                Garage thisGar = this.userInputSelectGarage();
+                if (thisGar == null) {
+                    System.out.println("Failed to get garage");
+                    finishTurn = false;
+                    break;
+                }
+                if (thisGar.fixThis(thisComp, thisVeh, currentPlayer)) {
+                    System.out.println("Success");
+                } else {
+                    System.out.println("Failure");
+                }
                 finishTurn = true;
                 break;
             case 5:
@@ -145,5 +172,30 @@ public class Menu {
                 break;
         }
         return finishTurn;
+
+    }
+
+    public Vehicle userInputGetPlayersVeh(Player player) {
+        System.out.println("Which car? Provide id.");
+        Scanner scanner = new Scanner(System.in);
+        return player.getVehicleById(scanner.nextInt());
+    }
+
+    public Vehicle userInputGetFromAllVeh() {
+        System.out.println("Which car? Provide id.");
+        Scanner scanner = new Scanner(System.in);
+        return game.getVehicleById(scanner.nextInt());
+    }
+
+    public Component userInputGetVehComponent(Vehicle veh) {
+        System.out.println("Which component (Body, Brakes, Dampers, Engine or Gearbox)?");
+        Scanner scanner = new Scanner(System.in);
+        return veh.getComponentByName(scanner.next());
+    }
+
+    public Garage userInputSelectGarage() {
+        System.out.println("Which workshop [cheap|medium|expensive]?");
+        Scanner scanner = new Scanner(System.in);
+        return game.getGarageByType(scanner.next());
     }
 }

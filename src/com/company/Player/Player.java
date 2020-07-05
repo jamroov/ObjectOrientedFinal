@@ -1,6 +1,11 @@
 package com.company.Player;
 
+import com.company.Customer.Customer;
 import com.company.Game.GameBoard;
+import com.company.Garages.Garage;
+import com.company.Transactions.Buy;
+import com.company.Transactions.Pay;
+import com.company.Transactions.Sell;
 import com.company.Transactions.Transaction;
 import com.company.Vehicles.Vehicle;
 
@@ -63,12 +68,15 @@ public class Player {
     }
 
     public Boolean buyVehicle(Vehicle vehicle) {
+        Buy thisTransaction = new Buy(this, vehicle);
         Double totalPrice = vehicle.value + (vehicle.value * 0.02);
         System.out.println(String.format("Vehicle price is: %.2f, you will also pay tax: %.2f", vehicle.value, vehicle.value * 0.02));
         System.out.println(String.format("For a total price of: %.2f", totalPrice));
         if (totalPrice <= this.Money) {
             this.addVehicle(vehicle);
             this.subtractMoney(totalPrice);
+            thisTransaction.setTransaction(true, totalPrice, "Succesfull purchase");
+            this.addTransaction(thisTransaction);
             return true;
         }
         else {
@@ -105,5 +113,17 @@ public class Player {
         }
         System.out.println("You don't won a vehicle with ID: " + id);
         return null;
+    }
+
+    public void addTransaction(Transaction thisTransaction) {
+        this.Transactions.add(thisTransaction);
+    }
+
+    public String getTransactionHistory() {
+        StringBuilder data = new StringBuilder();
+        for (Transaction trans : this.Transactions) {
+            data.append(trans.toString()).append("\n");
+        }
+        return data.toString();
     }
 }

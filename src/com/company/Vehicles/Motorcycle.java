@@ -2,6 +2,7 @@ package com.company.Vehicles;
 
 public class Motorcycle extends Vehicle {
     public Motorcycle(Integer id, Double value, String make, Integer mileage, String colour, String segment) {
+        this.type = "Motorcycle";
         this.id = id;
         this.value = value;
         this.make = make;
@@ -11,6 +12,6 @@ public class Motorcycle extends Vehicle {
     }
 
     public String toString() {
-        return "Motorcycle, " + super.toString();
+        return super.toString();
     }
 }

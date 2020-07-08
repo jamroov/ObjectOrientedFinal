@@ -4,6 +4,7 @@ import com.company.Components.Component;
 import com.company.Customer.Customer;
 import com.company.Game.GameBoard;
 import com.company.Transactions.Buy;
+import com.company.Transactions.Installment;
 import com.company.Transactions.Sell;
 import com.company.Transactions.Transaction;
 import com.company.Vehicles.Vehicle;
@@ -18,6 +19,7 @@ public class Player {
     private String name;
     private ArrayList<Vehicle> Vehicles = new ArrayList<>();
     private ArrayList<Transaction> Transactions = new ArrayList<>();
+    private ArrayList<Installment> Installments = new ArrayList<>();
 
     public ArrayList<Transaction> getTransactions() {
         return Transactions;
@@ -46,16 +48,13 @@ public class Player {
         }
     }
 
-    public void setupInstallments(Double value) {
-        this.installmentsLeft = 10;
-        this.installmentRate = value / 10;
-    }
-
-    public void getInstallmentMoney() {
-        if (this.installmentsLeft > 0) {
-            this.installmentsLeft -= 1;
-            System.out.println(String.format("Installment no: %d out of 10. Value: %.2f", 10 - this.installmentsLeft, this.installmentRate));
-            this.addMoney(this.installmentRate);
+    public void processInstallments() {
+        for (Installment installment : this.Installments) {
+            if (installment.howMany > 0) {
+                installment.howMany -= 1;
+                System.out.println(String.format("Processing installment %d out of 10, value: %.2f", installment.howMany - 10, installment.value / 10));
+                this.addMoney(installment.value / 10);
+            }
         }
     }
 
@@ -112,8 +111,9 @@ public class Player {
         }
         else {
             System.out.println("Customer cannot afford that. They will buy this vehicle in 10 installments");
-            this.setupInstallments(vehicle.value);
             this.subtractMoney(sellTax);
+            Installment thisInstallment = new Installment(vehicle.value, 10);
+            this.Installments.add(thisInstallment);
             thisTransaction.setTransaction(true, vehicle.value + sellTax, "Vehicle sold in 10 installments to " + cust.name);
             this.Vehicles.remove(vehicle);
             return true;

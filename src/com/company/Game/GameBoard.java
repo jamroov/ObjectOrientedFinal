@@ -40,7 +40,7 @@ public class GameBoard {
     public Boolean Play(Menu menu, Integer playerId) throws IOException, SQLException {
         this.currentPlayerId = playerId;
         System.out.println(this.getCurrentPlayer().toString());
-        this.getCurrentPlayer().getInstallmentMoney();
+        this.getCurrentPlayer().processInstallments();
         Boolean endGame = false;
         menu.PrintMenu();
         Integer choice = menu.getChoice();

@@ -11,11 +11,11 @@ public abstract class Component {
     public Double health;
 
     public static void addComponents(Vehicle vehicle) {
-        vehicle.components.add(new Body(ThreadLocalRandom.current().nextDouble(50.00, 100.00)));
+        vehicle.components.add(new Body(ThreadLocalRandom.current().nextDouble(20.00, 100.00)));
         vehicle.components.add(new Brakes(ThreadLocalRandom.current().nextDouble(50.00, 100.00)));
-        vehicle.components.add(new Dampers(ThreadLocalRandom.current().nextDouble(50.00, 100.00)));
-        vehicle.components.add(new Engine(ThreadLocalRandom.current().nextDouble(50.00, 100.00)));
-        vehicle.components.add(new Gearbox(ThreadLocalRandom.current().nextDouble(50.00, 100.00)));
+        vehicle.components.add(new Dampers(ThreadLocalRandom.current().nextDouble(30.00, 100.00)));
+        vehicle.components.add(new Engine(ThreadLocalRandom.current().nextDouble(40.00, 100.00)));
+        vehicle.components.add(new Gearbox(ThreadLocalRandom.current().nextDouble(10.00, 100.00)));
     }
 
     public String toString() {

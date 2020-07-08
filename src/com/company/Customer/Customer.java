@@ -10,6 +10,12 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Customer {
+    public Integer id;
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String name;
     public Double cash;
     public String wantedType;
@@ -26,7 +32,10 @@ public class Customer {
         Integer allClients = Connector.getNumRows("clients");
         Set<Integer> ids = new HashSet<>();
         while (ids.size() != howMany) {
-            ids.add(ThreadLocalRandom.current().nextInt(1, allClients));
+            Integer id = ThreadLocalRandom.current().nextInt(1, allClients);
+            if (!thisGame.availableCustomers.contains(thisGame.getCustomerById(id))) {
+                ids.add(id);
+            }
         }
         for (Integer id : ids) {
             String sql = String.format("Select * from clients where clients.id = %d", id);
@@ -38,12 +47,13 @@ public class Customer {
             Boolean buyDamaged = res.getBoolean("willBuyDamaged");
 
             Customer thisCustomer = new Customer(name, cash, wantedType, buyDamaged);
+            thisCustomer.setId(id);
             thisGame.availableCustomers.add(thisCustomer);
         }
     }
 
     public String toString() {
         return String.format("I am a potential buyer. My name is %s, I have %.2f$ to spend on a %s. " +
-                "It is %b that I will buy a damaged vehicle.", this.name, this.cash, this.wantedType, this.willBuyDamaged);
+                "It is %b that I will buy a damaged vehicle. ID: %d", this.name, this.cash, this.wantedType, this.willBuyDamaged, this.id);
     }
 }

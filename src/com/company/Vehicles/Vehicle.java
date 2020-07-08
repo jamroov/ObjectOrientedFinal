@@ -20,9 +20,10 @@ public abstract class Vehicle {
     public String colour;
     public String segment;
     public Set<Component> components = new HashSet<>();
+    public ArrayList<String> repairHistory = new ArrayList<>();
 
     public String toString() {
-        StringBuilder message = new StringBuilder(String.format("ID: %d, Value: %.2f, brand: %s, mileage: %d, color: %s, segment: %s", this.id, this.value, this.make,
+        StringBuilder message = new StringBuilder(String.format("%s, ID: %d, Value: %.2f, brand: %s, mileage: %d, color: %s, segment: %s", this.type, this.id, this.value, this.make,
                 this.mileage, this.colour, this.segment) + "\n");
         message.append("Components:\n");
         for (Component comp : this.components) {
@@ -65,6 +66,14 @@ public abstract class Vehicle {
         }
     }
 
+    public String getRepairHistory() {
+        StringBuilder hist = new StringBuilder();
+        for (String msg : this.repairHistory) {
+            hist.append(msg).append("\n");
+        }
+        return hist.toString();
+    }
+
     public Component getComponentByName(String name) {
         for (Component com : this.components) {
             if (com.type.equals(name)) {
@@ -83,6 +92,13 @@ public abstract class Vehicle {
     }
 
     public String toStringShort() {
-        return String.format("%s. ID: %d. Make: %s. Value: %.2f", this.type, this.id, this.make, this.value);
+        Boolean isDamaged = false;
+        for (Component component : this.components) {
+            if (component.damaged) {
+                isDamaged = true;
+                break;
+            }
+        }
+        return String.format("%s. ID: %d. Make: %s. Value: %.2f. Damaged: %b", this.type, this.id, this.make, this.value, isDamaged);
     }
 }

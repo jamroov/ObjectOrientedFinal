@@ -1,5 +1,7 @@
 package com.company.Vehicles;
 
+import com.company.Components.Component;
+
 public class Truck extends Vehicle {
     public Double load_capacity;
 
@@ -16,6 +18,12 @@ public class Truck extends Vehicle {
     }
 
     public String toString() {
-        return super.toString() + String.format(" load capacity: %.2f ", this.load_capacity);
+        StringBuilder msg = new StringBuilder();
+        msg.append(String.format("%s, ID: %d, Value: %.2f, brand: %s, mileage: %d, color: %s, segment: %s, load capacity: %.2f\n",
+                this.type, this.id, this.value, this.make, this.mileage, this.colour, this.segment, this.load_capacity));
+        for (Component comp : this.components) {
+            msg.append(comp.toString()).append("\n");
+        }
+        return msg.toString();
     }
 }

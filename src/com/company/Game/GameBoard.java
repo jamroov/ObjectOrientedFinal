@@ -12,8 +12,6 @@ import com.company.Player.Player;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class GameBoard {
     //Select rules
@@ -39,9 +37,10 @@ public class GameBoard {
 
     public GameBoard() {
     }
-    public Boolean Play(Menu menu, Integer playerId) throws IOException {
+    public Boolean Play(Menu menu, Integer playerId) throws IOException, SQLException {
         this.currentPlayerId = playerId;
         System.out.println(this.getCurrentPlayer().toString());
+        this.getCurrentPlayer().getInstallmentMoney();
         Boolean endGame = false;
         menu.PrintMenu();
         Integer choice = menu.getChoice();
@@ -76,9 +75,9 @@ public class GameBoard {
         Vehicle.setupVehicles(this, this.numStarterCars);
         Customer.setupCustomers(this, this.numStarterClients);
         Garage.setDefaultPrices(10000.00, 6000.00, 4500.00, 12500.00, 10250.00);
-        this.availableGarages.add(new CheapJanuszPol("Cheap", 5));
-        this.availableGarages.add(new MediumMarianCars("Medium", 10));
-        this.availableGarages.add(new LuxJanuszAuto("Expensive", 0));
+        this.availableGarages.add(new CheapJanuszPol("Cheap", 5, "Tani Antoi"));
+        this.availableGarages.add(new MediumMarianCars("Medium", 10, "Solidny Marian"));
+        this.availableGarages.add(new LuxJanuszAuto("Expensive", 0, "Luksusowy Lucas"));
         Menu mainMenu = new Menu(this);
         while (!gameEnded) {
             gameEnded = Play(mainMenu, this.currentPlayerId);
@@ -128,7 +127,33 @@ public class GameBoard {
         return null;
     }
 
-    public Boolean checkIfWon() {
-        return this.getCurrentPlayer().getMoney() >= startingMoney;
+    public Customer getCustomerById(Integer id) {
+        for (Customer cust:this.availableCustomers) {
+            if (cust.id.equals(id)) {
+                return cust;
+            }
+        }
+        return null;
     }
+
+    public Customer getCustomerByName(String name) {
+        for (Customer cust : this.availableCustomers) {
+            if (cust.name.equals(name)) {
+                return cust;
+            }
+        }
+        System.out.println("No customer with name: " + name);
+        return null;
+    }
+
+    public void printAllVehsShort() {
+        for (Vehicle veh : this.availableVehicles) {
+            System.out.println(veh.toStringShort());
+        }
+    }
+
+    public Boolean checkIfWon() {
+        return this.getCurrentPlayer().getMoney() >= 2 * startingMoney;
+    }
+
 }

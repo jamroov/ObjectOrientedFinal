@@ -1,6 +1,10 @@
 package com.company.Menu;
 
+import com.company.Advert.Advert;
+import com.company.Advert.InternetAd;
+import com.company.Advert.LocalPaperAd;
 import com.company.Components.Component;
+import com.company.Customer.Customer;
 import com.company.Game.GameBoard;
 import com.company.Garages.Garage;
 import com.company.Player.Player;
@@ -10,10 +14,8 @@ import com.company.Vehicles.Vehicle;
 import org.w3c.dom.ls.LSOutput;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.sql.SQLException;
+import java.util.*;
 
 public class Menu {
     private GameBoard game;
@@ -42,8 +44,9 @@ public class Menu {
         this.options.add(": Check your account balance");
         this.options.add(": Check transactions history");
         this.options.add(": Check car repair history");
-        this.options.add(": Check how much you spent to fix and clean a car.");
-        for (int key = 1; key < 12; key++) {
+        this.options.add(": Check how much you will spend to fix a car.");
+        this.options.add(": Skip turn.");
+        for (int key = 1; key < 13; key++) {
             this.optionsDict.put(key, this.options.get(key - 1));
         }
     }
@@ -66,7 +69,7 @@ public class Menu {
                 scanner.nextLine();
                 continue;
             }
-            if (choice < 1 || choice > 9) {
+            if (choice < 1 || choice > 13) {
                 System.out.println("Wrong  input.");
                 continue;
             }
@@ -74,62 +77,70 @@ public class Menu {
         }
     }
 
-    public Boolean selectAction(Integer choice) throws IOException {
+    public Boolean selectAction(Integer choice) throws IOException, SQLException {
         Scanner scanner = new Scanner(System.in);
         Player currentPlayer = game.getCurrentPlayer();
+        Vehicle playerVehicle;
+        Garage thisGarage;
+        Customer thisCustomer;
+        Component thisComponent;
         Boolean finishTurn = false;
         switch (choice) {
             case 1:
                 System.out.println("All available vehicles: \n");
                 game.listAllVehicles();
                 System.out.println("Press enter to continue.");
-                this.getEnterKey();
                 finishTurn = false;
                 break;
             case 2:
-                System.out.println("ID of a vehicle to buy:");
-                Vehicle vehToBuy = this.userInputGetFromAllVeh();
-                if (vehToBuy == null) {
+                game.printAllVehsShort();
+                playerVehicle = this.userInputGetFromAllVeh();
+                if (playerVehicle == null) {
                     System.out.println("Press enter to continue.");
-                    this.getEnterKey();
                     finishTurn = false;
                     break;
                 }
-                if (currentPlayer.buyVehicle(vehToBuy)) {
-                    game.availableVehicles.remove(vehToBuy);
+                if (currentPlayer.buyVehicle(playerVehicle)) {
+                    game.availableVehicles.remove(playerVehicle);
+                    System.out.println("Press enter to continue.");
+                    finishTurn = true;
+                    break;
                 }
-                System.out.println("Press enter to continue.");
-                this.getEnterKey();
-                finishTurn = true;
+                finishTurn = false;
                 break;
             case 3:
                 System.out.println("These are all your cars:");
                 System.out.println(currentPlayer.listOwnedCars());
                 System.out.println("Press enter to continue.");
-                this.getEnterKey();
                 finishTurn = false;
                 break;
             case 4:
                 System.out.println(game.listWorkshops());
-                Vehicle thisVeh = this.userInputGetPlayersVeh(currentPlayer);
-                if (thisVeh == null) {
+                currentPlayer.printVehiclesShort();
+                playerVehicle = this.userInputGetPlayersVeh(currentPlayer);
+                if (playerVehicle == null) {
                     System.out.println("Failed to get vehicle");
                     finishTurn = false;
                     break;
                 }
-                Component thisComp = this.userInputGetVehComponent(thisVeh);
-                if (thisComp == null) {
+                thisComponent = this.userInputGetVehComponent(playerVehicle);
+                if (thisComponent == null) {
                     System.out.println("Failed to get component");
                     finishTurn = false;
                     break;
                 }
-                Garage thisGar = this.userInputSelectGarage();
-                if (thisGar == null) {
+                for (Garage gar : game.availableGarages) {
+                    String msg = String.format("%s, garage type %s, to fix %s will cost %.2f", gar.name, gar.typeOfGarage,
+                            thisComponent.type, gar.getPricingForComponent(playerVehicle, thisComponent));
+                    System.out.println(msg);
+                }
+                thisGarage = this.userInputSelectGarage();
+                if (thisGarage == null) {
                     System.out.println("Failed to get garage");
                     finishTurn = false;
                     break;
                 }
-                if (thisGar.fixThis(thisComp, thisVeh, currentPlayer)) {
+                if (thisGarage.fixThis(thisComponent, playerVehicle, currentPlayer)) {
                     System.out.println("Success");
                 } else {
                     System.out.println("Failure");
@@ -140,61 +151,137 @@ public class Menu {
                 System.out.println("These are potential buyers:");
                 System.out.println(game.listCustomers());
                 System.out.println("Press enter to continue.");
-                this.getEnterKey();
                 finishTurn = false;
                 break;
             case 6:
-                //sellCar2Client
-                finishTurn = true;
+                currentPlayer.printVehiclesShort();
+                playerVehicle = this.userInputGetPlayersVeh(currentPlayer);
+                if (playerVehicle == null) {
+                    System.out.println("Failed to get vehicle");
+                    finishTurn = false;
+                    break;
+                }
+                System.out.println(game.listCustomers());
+                thisCustomer = this.userInputGetCustomer();
+                if (thisCustomer == null) {
+                    System.out.println("Failed to get customer");
+                    finishTurn = false;
+                    break;
+                }
+                finishTurn = currentPlayer.sellVehicle(playerVehicle, thisCustomer);
                 break;
             case 7:
                 //buyAdvert
+                Advert thisAd = userInputGetAd();
+                if (thisAd == null) {
+                    finishTurn = false;
+                    break;
+                }
+                if (!thisAd.buyAnAd(currentPlayer)) {
+                    finishTurn = false;
+                    break;
+                }
+                System.out.println(thisAd.CustomerIncrease + " new customers are available thanks to this campaign.");
+                Customer.setupCustomers(game, thisAd.CustomerIncrease);
                 finishTurn = true;
                 break;
             case 8:
-                System.out.println("Your account balance.");
-                System.out.println(game.players.get(game.getCurrentPlayerId()).getMoney());
+                System.out.println(String.format("Your account balance\n%.2f", currentPlayer.getMoney()));
                 System.out.println("Press enter to continue.");
-                this.getEnterKey();
                 finishTurn = false;
                 break;
             case 9:
-                //CheckTransHist
+                System.out.println(currentPlayer.getTransactionHistory());
                 finishTurn = false;
                 break;
             case 10:
                 //CheckRepairHist
+                currentPlayer.printVehiclesShort();
+                Vehicle veh = userInputGetPlayersVeh(currentPlayer);
+                if (veh == null) {
+                    System.out.println("You don't own this vehicle");
+                    finishTurn = false;
+                    break;
+                }
+                System.out.println(veh.getRepairHistory());
                 finishTurn = false;
                 break;
             case 11:
-                //calculateRepairCleanCost
+                thisGarage = userInputSelectGarage();
+                currentPlayer.printVehiclesShort();
+                playerVehicle = userInputGetPlayersVeh(currentPlayer);
+                String msg = thisGarage.getPricing(playerVehicle);
+                System.out.println(msg);
                 finishTurn = false;
                 break;
+            case 12:
+                finishTurn = true;
+                break;
         }
+        this.getEnterKey();
         return finishTurn;
+    }
 
+    public Advert userInputGetAd() {
+        System.out.println("What type of ad? Local paper can increase customer count by up to 6 for 5000.\n" +
+                "Internet ad only adds one customer for 1000. \n['Local paper' or 'Internet']");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine();
+        if (choice.equals("Local paper")) {
+            return new LocalPaperAd();
+        }
+        else if (choice.equals("Internet")) {
+            return new InternetAd();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public Customer userInputGetCustomer() {
+        System.out.println("Which customer? Name or ID please");
+        Scanner scanner = new Scanner(System.in);
+        String choice = scanner.nextLine();
+        try {
+            return game.getCustomerById(Integer.parseInt(choice));
+        } catch (NumberFormatException e) {
+            return game.getCustomerByName(choice);
+        }
     }
 
     public Vehicle userInputGetPlayersVeh(Player player) {
         System.out.println("Which car? Provide id.");
         Scanner scanner = new Scanner(System.in);
-        return player.getVehicleById(scanner.nextInt());
+        try {
+            return player.getVehicleById(scanner.nextInt());
+        }
+        catch (InputMismatchException e) {
+            return null;
+        }
+
     }
 
     public Vehicle userInputGetFromAllVeh() {
         System.out.println("Which car? Provide id.");
         Scanner scanner = new Scanner(System.in);
-        return game.getVehicleById(scanner.nextInt());
+        try {
+            return game.getVehicleById(scanner.nextInt());
+        }
+        catch (InputMismatchException e) {
+            return null;
+        }
+
     }
 
     public Component userInputGetVehComponent(Vehicle veh) {
+        System.out.println(veh.toString());
         System.out.println("Which component (Body, Brakes, Dampers, Engine or Gearbox)?");
         Scanner scanner = new Scanner(System.in);
         return veh.getComponentByName(scanner.next());
     }
 
     public Garage userInputSelectGarage() {
-        System.out.println("Which workshop [cheap|medium|expensive]?");
+        System.out.println("Which workshop [Cheap|Medium|Expensive]?");
         Scanner scanner = new Scanner(System.in);
         return game.getGarageByType(scanner.next());
     }
